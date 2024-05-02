@@ -33,4 +33,4 @@ If the YML file is not compatiable with your machine follow
 the prior instructions.
 
 ### Running file/game 
-```python "Name_Game_File.py```
+```python "Name_Game_File".py```
