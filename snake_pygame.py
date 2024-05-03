@@ -26,7 +26,7 @@ BLUE2 = (0, 100, 255)
 BLACK = (0,0,0)
 
 BLOCK_SIZE = 20
-SPEED = 5
+SPEED = 20
 class SnakeGame:
     
     def __init__(self, w=640, h=480):
@@ -40,7 +40,8 @@ class SnakeGame:
 
         # initalize game state
         self.direction = Direction.RIGHT
-
+        
+        
         self.head = Point(self.w/2,self.h/2)
         self.snake = [self.head, 
                       Point(self.head.x-BLOCK_SIZE, self.head.y),
