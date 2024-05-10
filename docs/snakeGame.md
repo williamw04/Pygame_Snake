@@ -51,6 +51,28 @@ import random
 from enum import Enum
 from collections import namedtuple
 
+# Direction Class Inherits Enum - Using class to represent constants as variables.
+# This makes the code more readable.
+class Direction(Enum):
+    RIGHT = 1
+    LEFT = 2
+    UP = 3
+    DOWN = 4
+
+# namedtuple is a lightweight class and is used to create a lightweight object Point
+# Point represents a point with attributes x coordiante and y coordinate
+Point = namedtuple('Point', 'x, y')
+
+#rgb colors
+WHITE = (255, 255, 255)
+RED = (200,0,0)
+BLUE1 = (0, 0, 255)
+BLUE2 = (0, 100, 255)
+BLACK = (0,0,0)
+
+BLOCK_SIZE = 20
+SPEED = 20
+
 if __name__ == '__main__': #if we run script as main process
 
   # game loop
@@ -67,7 +89,7 @@ Our game runs continuously scanning for inputs by calling game.play_step.
 
 
 ## Step 2 Creating SnakeGame PyGame
-### Defining initalizer
+## Defining initalizer
 ``` python
    def __init__(self, w=640, h=480):
        self.w = w
@@ -103,17 +125,14 @@ pygame.display.set_mode((self.w, self.h)). Caption is set to Snake and the game 
         self.food = None
         self._place_food()
 ```
-First set the direction of the snake to right. 
-
-Then we initalize the list that stores the components of the snake. We will define the snake as a 
-list of coordinates (Note: self.snake will also contain food and the reasoning will be clearer). 
-Self.head coordinates is the center of the display and the body of the snake coordinates 
-are set as offsets of the head. The coordinates are represented as a custom namedtuple Points
+1. First set the direction of the snake to right. 
+2. Then we initalize the list that stores the components of the snake. We will define the snake as a 
+list of coordinates Self.head coordinates is the center of the display and the body of the snake coordinates 
+are set as offsets of the head. The offset value is BLOCK_SIZE represnting the space between each 
+snake body part and the size of the body. The coordinates are represented as a custom namedtuple Points
 which is defined outside the class
-
-The score is then set as zero and food as none initally.
-
-Finally self._place_food() is called to place the first food and we define our first helper function.
+3. The score is then set as zero and food as none initally.
+4. Finally self._place_food() is called to place the first food and we define our first helper function.
 
 Together End Code:
 ``` python 
@@ -140,6 +159,7 @@ class SnakeGame:
         self.food = None
         self._place_food()
 ```
+end.
 
 
 #### _place_food():
@@ -155,9 +175,9 @@ chooses a random point in the game and if the food already exists in self.snake
 pick a new point to store
 
 
-## play_step(self):
+## Defining play_step(self):
 ``` python
-play_step(self):
+def play_step(self):
     #1. User Input
                 
     #2. Move
@@ -172,6 +192,36 @@ play_step(self):
 ```
 First we want to plan the flow of the game and what we need to code. 
 
+#### Defining UI, game clock and return values (#5 & #6)
+  ``` python
+    #5. Update UI and game clock
+    self._update_ui()
+    self.clock.tick(SPEED)
+    #6. game over and return score
+    return game_over, self.score
+  ```
+  self.clock.tick(SPEED) arguement determines how fast the frames updates
+
+  ``` python
+  def _update_ui():
+    self.display.fill(BLACK) #  self.display.fill(BLACK) fills in the display blackground as black
+
+    for pt in self.snake:  # For each part of the snake
+        #1st Arg: Where being drawn 2nd: Color 3rd: What is being drawn (Rect(position x, position y, width, height))
+        pygame.draw.rect(self.display, BLUE1, pygame.Rect(pt.x, pt.y, BLOCK_SIZE, BLOCK_SIZE)) 
+        pygame.draw.rect(self.display, BLUE2, pygame.Rect(pt.x+4, pt.y+4, 12, 12))
+
+    #draws the food
+    pygame.draw.rect(self.display, RED, pygame.Rect(self.food.x, self.food.y, BLOCK_SIZE, BLOCK_SIZE))
+
+    #Inialize text to render score
+    text = font.render("Score: " + str(self.score), True, WHITE)
+    self.display.blit(text, [0, 0]) #Put it on the display 1st Arg: Text 2nd Arg: coordinate
+    pygame.display.flip() #updates the display surface on the screen
+  ```
+
+
+#### Defining #1. User Input
 ``` python
   #1. User Input
   for event in pygame.event.get():
@@ -200,14 +250,73 @@ First we want to plan the flow of the game and what we need to code.
   four symbols RIGHT, LEFT, UP, DOWN which represents the respective constants 1
   2, 3, 4. In this case Direction.RIGHT represents 1.
   
-
+  #### Defining #2. Move
   ``` python
   #2. Move
       self._move(self.direction)
       self.snake.insert(0, self.head)
   ```
-  After checking the user input we then move the snake using the current direction the snake is facing
-  / is stored in self.direction. We do this by calling the helping function self._move(self.dircetion) 
+  After checking the user input we then move the snake using the current direction the snake is 
+  facing/is stored in self.direction. We do this by calling the helping function self._move(self.dircetion) 
   and inputing the direction stored as the arguement.
-  
+
+  #### Defining _move(self.direction)
+  ``` python
+  def _move(self.direction):
+    x = self.head.x
+    y = self.head.y
+    if direction == Direction.RIGHT:
+        x += BLOCK_SIZE 
+    elif direction == Direction.LEFT:
+        x -= BLOCK_SIZE 
+    elif direction == Direction.DOWN:
+        y += BLOCK_SIZE 
+    elif direction == Direction.UP:
+        y -= BLOCK_SIZE 
+
+    self.head = Point(x, y)
+  ```
+  _move offsets the coordinates of self.head by the BLOCK_SIZE in the direction the snake is moving.
+  self.snake.insert(0, self.head) inserts the updated head in the front of the snake container. This
+  doesn't edit the original head in the container since namedTuples are immutable. Meaning in helper
+  function _move editing self.head doesn't edit the orignal but changes the reference to the updated
+  initalized namedtuple with the offsetted values.
+
+  #### Defining #3. Check game state
+  ``` python
+  #3. Check game state
+      game_over = False
+      if self._is_collision():
+          game_over = True
+          return game_over, self.score
+  ```
+  if _is_collision() returns true
+  set game_over to true and return current game status and score.
+
+  ``` python
+  def _is_collision(self):
+        #hits bounday
+        if self.head.x > self.w - BLOCK_SIZE or self.head.x < 0 or self.head.y > self.h - BLOCK_SIZE or self.head.y < 0:
+            return True
+        #or hits itself
+        if self.head in self.snake[1:]:
+            return True
+        
+        return False
+  ```
+
+  #### Defining #4
+  ``` python 
+   #4. Place food or next move
+    if self.head == self.food:
+        self.score += 1
+        self._place_food()
+    else:
+        self.snake.pop()    
+  ```
+  if the location of self.head is on a food then place a new food otherwise remove the last pt on the snake to make the
+  illusion the snake is moving.
+
+  Finished
+
 
