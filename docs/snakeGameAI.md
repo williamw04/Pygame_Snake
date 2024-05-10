@@ -1,6 +1,6 @@
 # Theory
 
-## Reinforcement Learning
+### Reinforcement Learning
 Reinforcement learning(RL) is an area of machine learning concerned with how software agents 
 should take actions in an enviornment to maximize the notion of cumulative reward.
 
@@ -14,6 +14,35 @@ try to find the next best action.
 ### Deep Q Learning
 Apprach extends reinforcement leraning by using a deep neural network to predict actions
 
+(Deep) Q Learning
+Q Value = Quality of action : We want to improve Q value so each action to improve the quality of the predicted action
+
+0. Init Q Value (=init model) :Initalize model with random parameters
+1. Choose action (model.predict(state)) : Choose an action or a random move 
+(Done at the beginning of training since model is not trained enough to choose a good action. Later tradeoff is done
+when we train the model enough to only get an action using the model instead of randomness. This tradeoff is between
+exploration and expliotation).
+2. Perform action
+3. Measure reward
+4. Update Q value(+ train model) repeat step 1
+
+To train a model we need to use a loss functino to optimize/minimize.
+
+### **Bellman Equation**
+Predicts the value of a decision in terms of the payoff from some inital
+
+NewQ(s,a) = Q(s,a) + α[R(s,a) + γmaxQ'(s',a') - Q(s,a)]  
+NewQ(s,a): New Q value for the state and action
+Q(s,a): current value Q
+α: Learning rate
+R(s,a): Reward for taking the action at that state
+γ: discount rate
+maxQ'(s',a') - Q(s,a): max expected future reward given the new s' and all possible actions at that new state
+
+Loss Function:
+loss = (Qnew - Q)^2
+    
+
 # Overview
 
 ### **Game(Pygame)**
@@ -24,11 +53,11 @@ There is a game loop which there is a play_step (which performs an action) in th
 player inputs an action and the snake moves. Base on the action it returns the current reward, 
 if the agent has lost and the current score.
 
-### **Agent**
+### **Agent:**
 Agent puts everything together so the agent must be aware of the game and model which is stored 
 in the agent.
 
-### **Training**
+### **Training:**
 - state = get_state(game) : On the current conditions of the game calculate a state
 - action = get_move(state) : Using the state decide the nxet action
   - -> model.predict() : which uses model.predict()
@@ -38,12 +67,12 @@ in the agent.
 - model.train() and with the stored information train the model
 
 
-### **Model**
+### **Model:**
 Linear_QNet(DQN) Feed foward neural network with few linear layers
 Takes in new state, old state to train the model and passing the current state
 in model will output a predicted output
 
-### **Deep Dive into Variables**
+### **Deep Dive into Variables:**
 **Action**
 ``` python
 [1,0,0] -> Straight
@@ -75,3 +104,7 @@ All the values are booleans
   -eat food +10
   -game over: -10
   - everything else 0
+
+
+# Creating Game Environment
+
