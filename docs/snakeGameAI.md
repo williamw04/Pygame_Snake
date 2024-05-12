@@ -32,12 +32,26 @@ To train a model we need to use a loss functino to optimize/minimize.
 Predicts the value of a decision in terms of the payoff from some inital
 
 NewQ(s,a) = Q(s,a) + α[R(s,a) + γmaxQ'(s',a') - Q(s,a)]  
-NewQ(s,a): New Q value for the state and action
-Q(s,a): current value Q
-α: Learning rate
-R(s,a): Reward for taking the action at that state
-γ: discount rate
-maxQ'(s',a') - Q(s,a): max expected future reward given the new s' and all possible actions at that new state
+- NewQ(s,a): New Q value for the state and action
+- Q(s,a): current value Q
+- α: Learning rate
+- R(s,a): Reward for taking the action at that state
+- γ: discount rate
+- maxQ'(s',a') - Q(s,a): max expected future reward given the new s' and all possible actions at that new state
+
+Qinital = model.predict(state0)
+Qnew = R + γ * (max Q(state1))
+
+**Training:**
+- state = get_state(game) : On the current conditions of the game calculate a state
+- action = get_move(state) : Using the state decide the nxet action
+  - -> model.predict() : which uses model.predict() 
+**Qinital:** Is calculated by first taking state and calling  
+- reward, game_over, score = game.play_step(action) : Execute action to get reward, game over status and score
+- new_state = get_state(game) : cacluate a new state
+**Qnew:** Aftering taking the play step the new q ss calculated by using the state after the play step.
+- remember : store old state and new state and the reward, game over status and score
+- model.train() and with the stored information train the model
 
 Loss Function:
 loss = (Qnew - Q)^2

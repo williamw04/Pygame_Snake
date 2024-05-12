@@ -6,6 +6,12 @@ from collections import namedtuple
 pygame.init()
 font = pygame.font.Font('arial.ttf', 25)
 
+#reset : agent can reset game and restart game
+#reward : reward agent receives
+#play function play(action) -> direction
+#game_iteration
+#is_collision
+
 # Direction Class Inherits Enum - Using class to represent constants as variables.
 # This makes the code more readable.
 class Direction(Enum):
