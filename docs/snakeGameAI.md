@@ -14,7 +14,8 @@ try to find the next best action.
 ### Deep Q Learning
 Apprach extends reinforcement leraning by using a deep neural network to predict actions
 
-(Deep) Q Learning
+(Deep) Q Learning 
+Note: Skip/or come back to this section after reading the overview
 Q Value = Quality of action : We want to improve Q value so each action to improve the quality of the predicted action
 
 0. Init Q Value (=init model) :Initalize model with random parameters
@@ -119,6 +120,4 @@ All the values are booleans
   -game over: -10
   - everything else 0
 
-
-# Creating Game Environment
 

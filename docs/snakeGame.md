@@ -320,3 +320,44 @@ First we want to plan the flow of the game and what we need to code.
   Finished
 
 
+## Updating SnakePygame AI Controlled
+
+After setting up the environment implementing the snake pygame we have to implement the following changes
+
+1. reset : agent can reset game and restart game
+2. reward : reward agent receives
+3. play function play(action) -> direction
+4. game_iteration
+5. is_collision
+
+#### Step 1 Defining a Reset Function
+``` python
+    def __init__(self, w=640, h=480):
+        self.w = w
+        self.h = h
+
+        # initalize display
+        self.display = pygame.display.set_mode((self.w, self.h)) 
+        pygame.display.set_caption('Snake')
+        self.clock = pygame.time.Clock()
+        self.reset
+        self.frame_iteration = 0
+
+    def reset(self):
+        # initalize game state
+        self.direction = Direction.RIGHT
+        
+        
+        self.head = Point(self.w/2,self.h/2)
+        self.snake = [self.head, 
+                      Point(self.head.x-BLOCK_SIZE, self.head.y),
+                      Point(self.head.x-(2*BLOCK_SIZE), self.head.y)]
+        self.score = 0
+        self.food = None
+        self._place_food()
+```
+We refractor the previous code by seperating the part of code that initalizes the
+game state within the initalizer into a reset function. We also want to keep track of 
+frame iteration so initalize a counter "frame_iteration = 0" in the initalizer.
+
+#### Give the Play step action from Agent and return reward
