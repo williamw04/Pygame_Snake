@@ -153,10 +153,12 @@ class SnakeGameAI:
             new_dir = clock_wise[index]
         elif np.array_equal(action, [0,1,0]): #right turn (close wise)
             next_index = (index + 1) % 4 #next is right -> down -> left -> up -> right ...
-            new_dir = clock_wise[index]
+            new_dir = clock_wise[next_index]
         else:
             next_index = (index - 1) % 4  #next is right -> up -> left -> down -> right ...
-            new_dir = clock_wise[index]
+            new_dir = clock_wise[next_index]
+
+        self.direction = new_dir
 
         x = self.head.x
         y = self.head.y
