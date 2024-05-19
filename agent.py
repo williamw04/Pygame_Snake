@@ -3,6 +3,8 @@ import random
 import numpy as np
 from collections import deque
 from game import SnakeGameAI, Direction, Point, BLOCK_SIZE
+from model import Linear_QNet, QTrainer
+from helper import plot
 
 MAX_MEMORY = 100_000
 BATCH_SIZE = 1000
@@ -13,10 +15,10 @@ class Agent:
   def __init__(self):
     self.n_games = 0
     self.epsilon = 0 # randomness
-    self.gamma = 0 # discount rate
+    self.gamma = 0.9 # discount rate
     self.memory = deque(maxlen=MAX_MEMORY) #pop left when full
-    self.model = None # TODO
-    self.trainer = None # TODO
+    self.model = Linear_QNet(11, 256, 3)
+    self.trainer = QTrainer(self.model,lr=LR, gamma=self.gamma) 
     # TODO: model, trainer
 
   def get_state(self, game):
@@ -34,15 +36,15 @@ class Agent:
 
     state = [
         # Danger straight
-        (dir_r and game.is_collision(point_r)) or 
-        (dir_l and game.is_collision(point_l)) or 
+        (dir_r and game.is_collision(point_r)) or #if snake is going right and will collide if snake went right
+        (dir_l and game.is_collision(point_l)) or #if snake is going left and will collide if snake went left
         (dir_u and game.is_collision(point_u)) or 
         (dir_d and game.is_collision(point_d)),
 
         # Danger right
-        (dir_u and game.is_collision(point_r)) or 
-        (dir_d and game.is_collision(point_l)) or 
-        (dir_l and game.is_collision(point_u)) or 
+        (dir_u and game.is_collision(point_r)) or #if snake is going up and will collide if turn right
+        (dir_d and game.is_collision(point_l)) or #if snake is going down will it collide if it turn left
+        (dir_l and game.is_collision(point_u)) or #if snake is going left will it collide if it turn right
         (dir_r and game.is_collision(point_d)),
 
         # Danger left
@@ -68,13 +70,13 @@ class Agent:
 
 
   def remember(self, state, action, reward, next_state, done):
-    self.memory.append(state, action, reward, next_state, done)
+    self.memory.append([state, action, reward, next_state, done])
 
   def train_long_memory(self):
     if len(self.memory) > BATCH_SIZE:
       mini_sample = random.sample(self.memory, BATCH_SIZE)
     else:
-      mini_Sample = self.memory
+      mini_sample = self.memory
 
     states, actions, rewards, next_states, dones = zip(*mini_sample)
     self.trainer.train_step(states, actions, rewards, next_states, dones)
@@ -92,7 +94,7 @@ class Agent:
       final_move[move] = 1
     else:
       state0 = torch.tensor(state, dtype=torch.float)
-      prediction = self.model.predict(state0)
+      prediction = self.model(state0)
       move = torch.argmax(prediction).item()
       final_move[move] = 1
 
@@ -129,11 +131,16 @@ def train():
 
       if score > record:
         record = score
-        #agent.model.save()
+        agent.model.save()
 
-        print('Game', agent.n_games, 'Score', score, 'Record', record)
+      print('Game', agent.n_games, 'Score', score, 'Record', record)
 
-        # TODO: plot
+      plot_scores.append(score)
+      total_score += score
+      mean_score = total_score / agent.n_games
+      plot_mean_scores.append(mean_score)
+      plot(plot_scores, plot_mean_scores)
+
 
 if __name__ == "__main__":
   train()

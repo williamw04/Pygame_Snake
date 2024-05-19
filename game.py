@@ -5,6 +5,8 @@ from collections import namedtuple
 import numpy as np
 
 pygame.init()
+
+
 font = pygame.font.Font('arial.ttf', 25)
 
 #reset : agent can reset game and restart game
@@ -33,7 +35,7 @@ BLUE2 = (0, 100, 255)
 BLACK = (0,0,0)
 
 BLOCK_SIZE = 20
-SPEED = 20
+SPEED = 40
 class SnakeGameAI:
     
     def __init__(self, w=640, h=480):
@@ -44,9 +46,7 @@ class SnakeGameAI:
         self.display = pygame.display.set_mode((self.w, self.h)) 
         pygame.display.set_caption('Snake')
         self.clock = pygame.time.Clock()
-        self.reset
-        self.frame_iteration = 0
-    
+        self.reset()
 
     # Refactored initalizer and seperated code to initalizing game state
     # into its own reset func
@@ -60,6 +60,7 @@ class SnakeGameAI:
         self.score = 0
         self.food = None
         self._place_food()
+        self.frame_iteration = 0
 
     def _place_food(self):
         x = random.randint(0, (self.w-BLOCK_SIZE )//BLOCK_SIZE)*BLOCK_SIZE
@@ -185,4 +186,4 @@ class SnakeGameAI:
 #     print('Final Score', score)
 
 
-    pygame.quit()
+    # pygame.quit()
